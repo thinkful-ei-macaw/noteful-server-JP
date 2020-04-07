@@ -5,7 +5,7 @@ describe('App', () => {
   // default endpoint
   describe('GET /', () => {
 
-    // happy test
+    // happy path test
     it('responds with 200 containing "Hello, world!"', () => {
       return supertest(app)
         .get('/')
