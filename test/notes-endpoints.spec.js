@@ -1,44 +1,44 @@
-const knex = require('knex');
-const app = require('../src/app');
-const { TEST_DB_URL } = require('../src/config');
-const { makeNotesArray, makeFoldersArray } = require('./notes.fixtures');
+const knex = require("knex");
+const app = require("../src/app");
+const { TEST_DB_URL } = require("../src/config");
+const { makeNotesArray, makeFoldersArray } = require("./notes.fixtures");
 
-describe('Notes Endpoints', function () {
+describe("Notes Endpoints", function () {
   let db;
-  before('make knex instance', () => {
+  before("make knex instance", () => {
     db = knex({
-      client: 'pg',
+      client: "pg",
       connection: process.env.TEST_DB_URL,
     });
-    app.set('db', db);
+    app.set("db", db);
   });
 
-  after('disconnect from db', () => db.destroy());
+  after("disconnect from db", () => db.destroy());
 
-  before('clean the table', () =>
-    db('notes')
+  before("clean the table", () =>
+    db("notes")
       .truncate()
-      .then(() => db.raw('TRUNCATE TABLE folders RESTART IDENTITY CASCADE'))
+      .then(() => db.raw("TRUNCATE TABLE folders RESTART IDENTITY CASCADE"))
   );
 
-  afterEach('cleanup', () =>
-    db('notes')
+  afterEach("cleanup", () =>
+    db("notes")
       .truncate()
-      .then(() => db.raw('TRUNCATE TABLE folders RESTART IDENTITY CASCADE'))
+      .then(() => db.raw("TRUNCATE TABLE folders RESTART IDENTITY CASCADE"))
   );
 
-  context('Given there are notes in the database', () => {
+  context("Given there are notes in the database", () => {
     const testFolders = makeFoldersArray();
     const testNotes = makeNotesArray();
 
-    beforeEach('insert folders', () => {
-      return db.insert(testFolders).into('folders');
+    beforeEach("insert folders", () => {
+      return db.insert(testFolders).into("folders");
     });
-    beforeEach('insert notes', () => {
-      return db.insert(testNotes).into('notes');
+    beforeEach("insert notes", () => {
+      return db.insert(testNotes).into("notes");
     });
-    it('responds with 200 and all of the notes', () => {
-      return supertest(app).get('/note').expect(200, testNotes);
+    it("responds with 200 and all of the notes", () => {
+      return supertest(app).get("/folder/note").expect(200, testNotes);
     });
   });
   // context(`Given an XSS attack note`, ()=> {
@@ -67,17 +67,15 @@ describe('Notes Endpoints', function () {
   //   })
   // })
 });
-describe('GET /notes/:id', () => {
-  context('Given no notes in the database', () => {
-    it('responds with 404', () => {
+describe("GET /notes/:id", () => {
+  context("Given no notes in the database", () => {
+    it("responds with 404", () => {
       const id = 123456;
-      return supertest(app)
-        .get(`/notes/${id}`)
-        .expect(404);
+      return supertest(app).get(`/notes/${id}`).expect(404);
     });
   });
 
-  context('Given there are articles in the database', () => {
+  context("Given there are articles in the database", () => {
     const testNotes = makeNotesArray();
   });
 });

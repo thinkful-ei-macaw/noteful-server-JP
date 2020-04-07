@@ -1,24 +1,27 @@
-const path = require('path');
-const express = require('express');
-const folderService = require('./folders-service');
+const path = require("path");
+const express = require("express");
+const folderService = require("./folders-service");
 
 const folderRouter = express.Router();
 const jsonParser = express.json();
 
+const serializeFolders = (folder) => ({
+  id: folder.id,
+  title: folder.title,
+});
 
 folderRouter
-  .route('/:id')
+  .route("/:id")
+
   .all((req, res, next) => {
-    folderService.getByFolderId(
-      req.app.get('db'),
-      req.params.id
-    )
-      .then(folder => {
+    folderService
+      .getByFolderId(req.app.get("db"), req.params.id)
+      .then((folder) => {
         if (!folder)
           return res.status(404).json({
             error: {
-              message: 'Folder does not exist'
-            }
+              message: "Folder does not exist",
+            },
           });
         else {
           res.status(201).json(folder);
@@ -28,28 +31,20 @@ folderRouter
   })
 
   .patch((req, res, next) => {
-    const {
-      title
-    } = req.body;
+    const { title } = req.body;
     const folder = {
-      title
+      title,
     };
     if (!title) {
       return res.status(404).json({
-        error: 'Must include title'
+        error: "Must include title",
       });
     }
-    folderService.updateFolder(
-      req.app.get('db'),
-      folder
-    )
-      .catch(next);
+    folderService.updateFolder(req.app.get("db"), folder).catch(next);
   })
   .delete((req, res, next) => {
-    folderService.deleteFolder(
-      req.app.get('db'),
-      req.params.id
-    )
+    folderService
+      .deleteFolder(req.app.get("db"), req.params.id)
       .then(() => {
         res.status(204).end();
       })
@@ -57,30 +52,37 @@ folderRouter
   });
 
 folderRouter
-  .route('/')
+  .route("/")
+  .get((req, res, next) => {
+    folderService
+      .getAllFolders(req.app.get("db"))
+      .then((folders) => {
+        res.json(folders.map(serializeFolders));
+      })
+      .catch(next);
+  })
   .post((req, res, next) => {
-    const {
-      title
-    } = req.body;
+    const { title } = req.body;
     const folder = {
-      title
+      title,
     };
     if (!title) {
       return res.status(404).json({
         error: {
-          message: 'Must include title'
-        }
+          message: "Must include title",
+        },
       });
     }
 
-    folderService.insertFolder(
-      req.app.get('db'),
+    folderService
+      .insertFolder(
+        req.app.get("db"),
 
-      folder)
-      .then(folder => {
+        folder
+      )
+      .then((folder) => {
         res.json(folder);
       });
   });
-
 
 module.exports = folderRouter;
