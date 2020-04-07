@@ -1,17 +1,15 @@
-const { expect } = require("chai");
-const knex = require("knex");
-const app = require("../src/app");
+const { expect } = require('chai');
+const knex = require('knex');
+const app = require('../src/app');
 
-describe("Folders Endpoints", function () {
-  let db;
-  before("make knex instance", () => {
-    db = knex({
-      client: "pg",
-      connection: process.env.TEST_DB_URL,
+
+describe('GET /folders/:id', () => {
+  context('Given no folders in the database', () => {
+    it('responds with 404', () => {
+      const id = 123456;
+      return supertest(app)
+        .get(`/folders/${id}`)
+        .expect(404);
     });
   });
-
-  after("disconnect from db", () => db.destroy());
-
-  before("clean the table", () => db("noteful-test").truncate());
 });

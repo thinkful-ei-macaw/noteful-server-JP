@@ -1,8 +1,8 @@
-const path = require("path");
-const express = require("express");
+const path = require('path');
+const express = require('express');
 
 const notesRouter = express.Router();
-const notesService = require("./notes-service");
+const notesService = require('./notes-service');
 
 // create note
 
@@ -15,19 +15,19 @@ const serializeNotes = (note) => ({
 });
 
 notesRouter
-  .route("/")
+  .route('/')
   .get((req, res, next) => {
     notesService
-      .getAllNotes(req.app.get("db"))
+      .getAllNotes(req.app.get('db'))
       .then((notes) => {
         res.json(notes.map(serializeNotes));
       })
       .catch(next);
   })
   .post((req, res, next) => {
-    req.app.get("db");
+    req.app.get('db');
 
-    const fieldsRequired = ["name", "content", "folder_id"];
+    const fieldsRequired = ['name', 'content', 'folder_id'];
     for (let field in fieldsRequired) {
       if (!req.body[field]) {
         return res.status(400).send(`'${field} is required`);
@@ -46,7 +46,7 @@ notesRouter
 
     notesService.insertNote(note);
     req.app
-      .get("db")
+      .get('db')
       .then((note) => {
         return res.json(note);
       })
@@ -55,9 +55,9 @@ notesRouter
 
 // read notes, update notes, delete
 notesRouter
-  .get("/:id", (req, res, next) => {
+  .get('/:id', (req, res, next) => {
     const { id } = req.params;
-    const db = req.app.get("db");
+    const db = req.app.get('db');
 
     notesService
       .getById(db, id)
@@ -65,7 +65,7 @@ notesRouter
         if (note) {
           return res.status(200).json(note);
         } else {
-          return res.status(400).send("Note not found");
+          return res.status(400).send('Note not found');
         }
       })
       .catch(next);
@@ -81,17 +81,17 @@ notesRouter
     };
 
     if (!title) {
-      return res.status(404).json({ error: "must include title" });
+      return res.status(404).json({ error: 'must include title' });
     }
 
     if (!content) {
       return res.status(404).json({
-        error: "must include content",
+        error: 'must include content',
       });
     }
 
     notesService
-      .updateNote(req.app.get("db"), noteToUpdate)
+      .updateNote(req.app.get('db'), noteToUpdate)
       .then((noteToUpdate) => {
         res.json(noteToUpdate);
       })
@@ -99,7 +99,7 @@ notesRouter
   })
   .delete((req, res, next) => {
     notesService
-      .deleteNote(req.app.get("db"), req.params.id)
+      .deleteNote(req.app.get('db'), req.params.id)
       .then(() => {
         res.status(204).end();
       })
