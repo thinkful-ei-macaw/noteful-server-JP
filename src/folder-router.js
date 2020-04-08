@@ -61,9 +61,9 @@ folderRouter
       })
       .catch(next);
   })
-  .post((req, res, next) => {
+  .post(jsonParser, (req, res, next) => {
     const { title } = req.body;
-    const folder = {
+    const newFolder = {
       title,
     };
     if (!title) {
@@ -74,15 +74,13 @@ folderRouter
       });
     }
 
-    folderService
-      .insertFolder(
-        req.app.get("db"),
+    newFolder.title = title;
 
-        folder
-      )
-      .then((folder) => {
-        res.json(folder);
+    folderService.insertFolder(req.app.get("db"), newFolder).then((folder) => {
+      res.json(folder).then((folder) => {
+        res.status(201).json(serializeFolders(folder));
       });
+    });
   });
 
 module.exports = folderRouter;

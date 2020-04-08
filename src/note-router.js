@@ -1,8 +1,7 @@
-const path = require("path");
 const express = require("express");
-
+const jsonParser = express.json();
 const notesRouter = express.Router();
-const notesService = require("./notes-service");
+const NotesService = require("./notes-service");
 
 // create note
 
@@ -24,15 +23,9 @@ notesRouter
       })
       .catch(next);
   })
-  .post((req, res, next) => {
+  .post(jsonParser, (req, res, next) => {
     req.app.get("db");
 
-    const fieldsRequired = ["name", "content", "folder_id"];
-    for (let field in fieldsRequired) {
-      if (!req.body[field]) {
-        return res.status(400).send(`'${field} is required`);
-      }
-    }
     const { id, title, content, folder_id, date } = req.body;
 
     const note = {
@@ -44,9 +37,7 @@ notesRouter
     if (id) note.id = id;
     if (date) note.date = date;
 
-    notesService.insertNote(note);
-    req.app
-      .get("db")
+    NotesService.insertNote(req.app.get("db"), note)
       .then((note) => {
         return res.json(note);
       })
@@ -65,7 +56,7 @@ notesRouter
         if (note) {
           return res.status(200).json(note);
         } else {
-          return res.status(400).send("Note not found");
+          return res.status(404).send("Note not found");
         }
       })
       .catch(next);

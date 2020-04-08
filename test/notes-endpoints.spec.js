@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 const knex = require("knex");
 const app = require("../src/app");
 const { TEST_DB_URL } = require("../src/config");
@@ -38,7 +39,7 @@ describe("Notes Endpoints", function () {
       return db.insert(testNotes).into("notes");
     });
     it("responds with 200 and all of the notes", () => {
-      return supertest(app).get("/folder/note").expect(200, testNotes);
+      return supertest(app).get("/notes").expect(200, testNotes);
     });
   });
   // context(`Given an XSS attack note`, ()=> {
@@ -67,15 +68,13 @@ describe("Notes Endpoints", function () {
   //   })
   // })
 });
+
 describe("GET /notes/:id", () => {
   context("Given no notes in the database", () => {
     it("responds with 404", () => {
       const id = 123456;
+
       return supertest(app).get(`/notes/${id}`).expect(404);
     });
-  });
-
-  context("Given there are articles in the database", () => {
-    const testNotes = makeNotesArray();
   });
 });
