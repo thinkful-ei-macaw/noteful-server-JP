@@ -1,24 +1,24 @@
 const NotesService = {
   getAllNotes(knex) {
-    return knex.select("*").from("notes");
+    return knex.select('*').from('notes');
   },
 
   insertNote(knex, newNote) {
     return knex
       .insert(newNote)
-      .into("notes")
-      .returning("*")
+      .into('notes')
+      .returning('*')
       .then((note) => {
         return note[0];
       });
   },
 
   getById(knex, id) {
-    return knex.from("notes").select("*").where("id", id).first();
+    return knex.from('notes').select('*').where('id', id).first();
   },
 
   deleteNote(knex, id) {
-    return knex
+    return knex('notes')
       .where({
         id,
       })
@@ -26,7 +26,7 @@ const NotesService = {
   },
 
   updateNote(knex, id, newNoteFields) {
-    return knex("notes")
+    return knex('notes')
       .where({
         id,
       })

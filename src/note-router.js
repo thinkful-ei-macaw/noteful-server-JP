@@ -1,7 +1,7 @@
-const express = require("express");
+const express = require('express');
 const jsonParser = express.json();
 const notesRouter = express.Router();
-const NotesService = require("./notes-service");
+const NotesService = require('./notes-service');
 
 // create note
 
@@ -14,17 +14,17 @@ const serializeNotes = (note) => ({
 });
 
 notesRouter
-  .route("/")
+  .route('/')
   .get((req, res, next) => {
-    notesService
-      .getAllNotes(req.app.get("db"))
+    NotesService
+      .getAllNotes(req.app.get('db'))
       .then((notes) => {
         res.json(notes.map(serializeNotes));
       })
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    req.app.get("db");
+    req.app.get('db');
 
     const { id, title, content, folder_id, date } = req.body;
 
@@ -37,7 +37,7 @@ notesRouter
     if (id) note.id = id;
     if (date) note.date = date;
 
-    NotesService.insertNote(req.app.get("db"), note)
+    NotesService.insertNote(req.app.get('db'), note)
       .then((note) => {
         return res.json(note);
       })
@@ -46,17 +46,18 @@ notesRouter
 
 // read notes, update notes, delete
 notesRouter
-  .get("/:id", (req, res, next) => {
+  .route('/:id')
+  .get((req, res, next) => {
     const { id } = req.params;
-    const db = req.app.get("db");
+    const db = req.app.get('db');
 
-    notesService
+    NotesService
       .getById(db, id)
       .then((note) => {
         if (note) {
           return res.status(200).json(note);
         } else {
-          return res.status(404).send("Note not found");
+          return res.status(404).send('Note not found');
         }
       })
       .catch(next);
@@ -72,27 +73,27 @@ notesRouter
     };
 
     if (!title) {
-      return res.status(404).json({ error: "must include title" });
+      return res.status(404).json({ error: 'must include title' });
     }
 
     if (!content) {
       return res.status(404).json({
-        error: "must include content",
+        error: 'must include content',
       });
     }
 
-    notesService
-      .updateNote(req.app.get("db"), noteToUpdate)
+    NotesService
+      .updateNote(req.app.get('db'), noteToUpdate)
       .then((noteToUpdate) => {
         res.json(noteToUpdate);
       })
       .catch(next);
   })
   .delete((req, res, next) => {
-    notesService
-      .deleteNote(req.app.get("db"), req.params.id)
+    NotesService
+      .deleteNote(req.app.get('db'), req.params.id)
       .then(() => {
-        res.status(204).end();
+        res.status(204).json({});
       })
       .catch(next);
   });
